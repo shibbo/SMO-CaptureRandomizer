@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="ByamlExt">
+      <HintPath>D:\Hacking\Switch\EditorCore\EditorCore\bin\Debug\Ext\ByamlExt.dll</HintPath>
+    </Reference>
+    <Reference Include="EditorCoreCommon">
+      <HintPath>D:\Hacking\Switch\EditorCore\EditorCoreCommon\bin\Debug\EditorCoreCommon.dll</HintPath>
+    </Reference>
+    <Reference Include="SARCExt">
+      <HintPath>D:\Hacking\Switch\EditorCore\EditorCore\bin\Debug\Ext\SARCExt.dll</HintPath>
+    </Reference>
+    <Reference Include="Syroot.BinaryData">
+      <HintPath>D:\Hacking\Switch\EditorCore\EditorCore\bin\Debug\Ext\Syroot.BinaryData.dll</HintPath>
+    </Reference>
+    <Reference Include="Syroot.Maths">
+      <HintPath>D:\Hacking\Switch\EditorCore\EditorCore\bin\Debug\Ext\Syroot.Maths.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>
