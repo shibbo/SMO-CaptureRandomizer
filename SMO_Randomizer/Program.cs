@@ -89,14 +89,11 @@ namespace SMO_Randomizer
 
             foreach (string f in files)
             {
-                // skip design files
-                if (f.EndsWith("Design.szs"))
+                // skip design and sound files
+                if (f.EndsWith("Design.szs") || f.EndsWith("Sound.szs"))
                     continue;
 
                 string stagename = Path.GetFileNameWithoutExtension(f);
-
-                if (stagename.Contains("Design") || stagename.Contains("Sound"))
-                    continue;
 
                 Console.WriteLine($"Processing {stagename}...");
 
@@ -121,7 +118,7 @@ namespace SMO_Randomizer
 
                 if (scenarioDict.ContainsKey("ObjectList"))
                 {
-                    List<object> objList = (List<object>)scenarioDict["ObjectList"];
+                    List<object> objList = scenarioDict["ObjectList"] as List<object>;
 
                     foreach (Dictionary<string, object> shit in objList)
                     {
