@@ -6,65 +6,16 @@ using ByamlExt.Byaml;
 using EveryFileExplorer;
 using SARCExt;
 using System.Linq;
+using SMO_Randomizer.stage.cap;
+using SMO_Randomizer.stage;
 
 namespace SMO_Randomizer
 {
     class Program
     {
-        public static List<string> sCapturableActors = new List<string>()
+        public static Dictionary<string, Func<IStage>> sStages = new Dictionary<string, Func<IStage>>()
         {
-            "AnagramAlphabetCharacter",
-            "BazookaElectric",
-            "BossKnuckleHand",
-            "BreedaWanwan",
-            "Bubble",
-            "Bull",
-            "Byugo",
-            "Cactus",
-            "Car",
-            "CarryMeat",
-            //"ElectricWire",
-            "Fastener",
-            "FireBros",
-            "Frog",
-            "Fukankun",
-            "FukuwaraiFacePartsKuribo",
-            "FukuwaraiFacePartsMario",
-            "Gamane",
-            "GotogotonCity",
-            "GotogontonLake",
-            "Guidepost",
-            "HackFork",
-            "HammerBros",
-            "Hosui",
-            "Imomu",
-            "JugemFishing",
-            "Kakku",
-            "KaronWing",
-            "Killer",
-            "KillerMagnum",
-            "Koopa",
-            "Kuribo",
-            "KuriboWing",
-            "Manhole",
-            "Megane",
-            "PackunFire",
-            "PackunPoison",
-            "Pukupuku",
-            "PukupukuSnow",
-            "Radicon",
-            "RockForest",
-            "Senobi",
-            "Statue",
-            "StatueKoopa",
-            "Tank",
-            "Tree",
-            "TRex",
-            "Tsukkun",
-            "Wanwan",
-            "WanwanBig",
-            "Yoshi",
-            "Yukumaru"
+            { "CapWorldHomeStageMap", () => new CapWorldHomeStage() },
         };
 
         static void Main(string[] args)
@@ -95,14 +46,20 @@ namespace SMO_Randomizer
 
                 string stagename = Path.GetFileNameWithoutExtension(f);
 
-                Console.WriteLine($"Processing {stagename}...");
-
                 DoStageChange(stagename, f);
             }
         }
 
         public static void DoStageChange(string stage, string path)
         {
+            if (!sStages.ContainsKey(stage))
+            {
+                Console.WriteLine($"{stage} is not supported for randomization yet! Skipping...");
+                return;
+            }
+
+            Console.WriteLine($"Processing {stage}...");
+
             var data = SARC.UnpackRamN(YAZ0.Decompress(File.ReadAllBytes(path)));
 
             // find the map
@@ -114,7 +71,9 @@ namespace SMO_Randomizer
 
             for (int i = 0; i < nodes.Count; i++)
             {
-                Dictionary<string, object> scenarioDict = (Dictionary<string, object>)nodes[i];
+                List<string> capturesPrinted = new List<string>();
+
+                Dictionary<string, object> scenarioDict = nodes[i] as Dictionary<string, object>;
 
                 if (scenarioDict.ContainsKey("ObjectList"))
                 {
@@ -122,22 +81,14 @@ namespace SMO_Randomizer
 
                     foreach (Dictionary<string, object> shit in objList)
                     {
-                        if (Program.IsCapturable(shit["UnitConfigName"].ToString()))
+                        if (sStages.ContainsKey(stage))
                         {
-                            var rand = new Random();
-                            string capture = Program.sCapturableActors[rand.Next(Program.sCapturableActors.Count)];
-                            shit["UnitConfigName"] = capture;
-
-                            Dictionary<string, object> moreShit = shit["UnitConfig"] as dynamic;
-
-                            if (moreShit.ContainsKey("ParameterConfigName"))
-                            {
-                                moreShit["ParameterConfigName"] = capture;
-                            }
+                            IStage stg = sStages[stage].Invoke();
+                            stg.DoRandom(ref objList, i);
                         }
-                    }
 
-                    scenarioDict["ObjectList"] = objList;
+                        scenarioDict["ObjectList"] = objList;
+                    }
                 }
 
                 nodes[i] = scenarioDict;
@@ -151,16 +102,6 @@ namespace SMO_Randomizer
             var saved_data = YAZ0.Compress(sarc_save.Item2, 3, (uint)sarc_save.Item1);
 
             File.WriteAllBytes($"out/{stage}.szs", saved_data);
-        }
-
-        public static bool IsCapturable(string actor)
-        {
-            return Program.sCapturableActors.Contains(actor);
-        }
-
-        public static List<string> FindAllCapturable(List<object> objList)
-        {
-            return null;
         }
     }
 }
