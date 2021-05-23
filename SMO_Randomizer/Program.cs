@@ -16,6 +16,9 @@ namespace SMO_Randomizer
         public static Dictionary<string, Func<IStage>> sStages = new Dictionary<string, Func<IStage>>()
         {
             { "CapWorldHomeStageMap", () => new CapWorldHomeStage() },
+            { "CapWorldTowerStage", () => new CapWorldTowerStage() },
+            { "FrogSearchExStage", () => new FrogSearchExStage() },
+            { "PoisonWaveExStage", () => new PoisonWaveExStage() }
         };
 
         static void Main(string[] args)
@@ -79,16 +82,13 @@ namespace SMO_Randomizer
                 {
                     List<object> objList = scenarioDict["ObjectList"] as List<object>;
 
-                    foreach (Dictionary<string, object> shit in objList)
+                    if (sStages.ContainsKey(stage))
                     {
-                        if (sStages.ContainsKey(stage))
-                        {
-                            IStage stg = sStages[stage].Invoke();
-                            stg.DoRandom(ref objList, i);
-                        }
-
-                        scenarioDict["ObjectList"] = objList;
+                        IStage stg = sStages[stage].Invoke();
+                        stg.DoRandom(ref objList, i);
                     }
+
+                    scenarioDict["ObjectList"] = objList;
                 }
 
                 nodes[i] = scenarioDict;

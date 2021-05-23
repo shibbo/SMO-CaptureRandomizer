@@ -30,20 +30,24 @@ namespace SMO_Randomizer.stage.cap
                         Dictionary<string, object> unitConfig = obj["UnitConfig"] as Dictionary<string, object>;
                         unitConfig["ParameterConfigName"] = name;
 
-                        Console.WriteLine($"Randomized {objName} to {name}");
-
                         objectList[i] = obj;
                     }
                 }
             }
             else
             {
+                int frogIdx = CaptureUtil.GetRandomIndexFromCapturesOfType(objectList, "Frog");
+
                 if (CaptureUtil.GetCapturableNum(objectList) == 0)
                     return;
 
                 // all KuriboWing captures must be horizontal flight captures
                 for (int i = 0; i < objectList.Count; i++)
                 {
+                    // SPARE US OUR FROG
+                    if (frogIdx == i)
+                        continue;
+
                     Dictionary<string, object> obj = objectList[i] as Dictionary<string, object>;
 
                     string objName = obj["UnitConfigName"] as string;
@@ -58,14 +62,11 @@ namespace SMO_Randomizer.stage.cap
 
                             Dictionary<string, object> unitConfig = obj["UnitConfig"] as Dictionary<string, object>;
                             unitConfig["ParameterConfigName"] = name;
-
-                            Console.WriteLine($"Randomized {objName} to {name} [Horizontal Flight]");
                         }
                         else
                         {
                             string name = CaptureUtil.GetRandomAnyCapture();
                             obj["UnitConfigName"] = name;
-                            Console.WriteLine($"Randomized {objName} to {name}");
                         }
 
                         objectList[i] = obj;

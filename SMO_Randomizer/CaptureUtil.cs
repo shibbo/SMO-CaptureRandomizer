@@ -137,10 +137,39 @@ namespace SMO_Randomizer
             return indicies;
         }
 
+        public static List<int> GetCapturableIndiciesOfType(List<object> objectList, string captureType)
+        {
+            List<int> indicies = new List<int>();
+
+            for (int i = 0; i < objectList.Count; i++)
+            {
+                var obj = objectList[i] as Dictionary<string, object>;
+
+                string name = obj["UnitConfigName"] as string;
+
+                if (IsCapturable(name) && name == captureType)
+                    indicies.Add(i);
+            }
+
+            return indicies;
+        }
+
         public static int GetRandomIndexFromCapturables(List<object> objectList)
         {
             Random rnd = new Random();
             List<int> indicies = GetCapturableIndicies(objectList);
+            int idx = rnd.Next(0, indicies.Count);
+            return indicies[idx];
+        }
+
+        public static int GetRandomIndexFromCapturesOfType(List<object> objectList, string captureName)
+        {
+            Random rnd = new Random();
+            List<int> indicies = GetCapturableIndiciesOfType(objectList, captureName);
+
+            if (indicies.Count == 0)
+                return -1;
+
             int idx = rnd.Next(0, indicies.Count);
             return indicies[idx];
         }
